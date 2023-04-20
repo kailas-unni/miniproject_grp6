@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:notify_v1/gouri-login.dart';
 import 'package:notify_v1/home.dart';
-import 'package:notify_v1/log-in.dart';
 
 //Time Zone initialization
 
