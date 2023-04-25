@@ -2,6 +2,7 @@ import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:notify_v1/calendar.dart';
+import 'package:notify_v1/components/searchWidget.dart';
 //import 'package:notify_v1/components/scrolllist.dart';
 import 'package:notify_v1/notLog.dart';
 import 'package:notify_v1/settings.dart';
@@ -9,14 +10,27 @@ import 'package:notify_v1/tst.dart';
 import 'package:notify_v1/viewNotf.dart';
 //import 'package:myapp/log-in/sign-up.dart';
 import 'package:select_card/select_card.dart';
-import 'package:list_wheel_scroll_view_x/list_wheel_scroll_view_x.dart';
 
 class ListItem {
   final String title;
-  final String details;
-
+  final List<String> details;
   ListItem({required this.title, required this.details});
 }
+
+List<ListItem> items = [
+  ListItem(title: 'Item 10', details: ['Details for Item 1', 'hi']),
+  ListItem(title: 'Item 2', details: ['Details for Item 2', 'hello']),
+  ListItem(title: 'Item 3', details: ['Details for Item 3', 'k']),
+  ListItem(title: 'Item 4', details: ['Details for Item 4', 'hi']),
+  ListItem(title: 'hi', details: ['Details for Item 5', 'hi']),
+  ListItem(title: 'Item 1', details: ['Details for Item 6', 'hi']),
+  ListItem(title: 'Item 7', details: ['Details for Item 7', 'hi']),
+  ListItem(title: 'Item 8', details: ['Details for Item 8', 'hi']),
+  ListItem(title: 'Item 9', details: ['Details for Item 9', 'hi']),
+  ListItem(title: 'Item 1', details: ['Details for Item 10', 'hi']),
+  ListItem(title: 'Item 11', details: ['Details for Item 11', 'hi']),
+  ListItem(title: 'Item 12', details: ['Details for Item 12', 'hi']),
+];
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -50,7 +64,13 @@ class _HomeState extends State<Home> {
           ),
           actions: [
             IconButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MyApp(),
+                    ));
+              },
               icon: Icon(Icons.search),
               color: Colors.white70,
             ),
@@ -212,6 +232,7 @@ class CardList extends StatelessWidget {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return viewNotfications(
             division: notTitle,
+            items: items,
           );
         }));
       },
@@ -349,24 +370,15 @@ class HorizontalList extends StatefulWidget {
 }
 
 class _HorizontalListState extends State<HorizontalList> {
-  final List<ListItem> items = [
-    ListItem(title: 'Item 1', details: 'Details for Item 1'),
-    ListItem(title: 'Item 2', details: 'Details for Item 2'),
-    ListItem(title: 'Item 3', details: 'Details for Item 3'),
-    ListItem(title: 'Item 4', details: 'Details for Item 4'),
-    ListItem(title: 'Item 5', details: 'Details for Item 5'),
-    ListItem(title: 'Item 6', details: 'Details for Item 6'),
-  ];
-
   int selectedIndex = 0;
 
-  void _showDetails(BuildContext context, String details) {
+  void _showDetails(BuildContext context, List details) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Details'),
-          content: Text(details),
+          content: Text(details[0] + '\n' + details[1]),
           actions: <Widget>[
             TextButton(
               child: Text('Close'),

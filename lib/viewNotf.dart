@@ -1,12 +1,22 @@
+import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 import 'package:flutter/material.dart';
 import 'package:notify_v1/home.dart';
+import 'components/sortWidget.dart';
 
-enum SortCriteria { notSubject, notIssuedDate, notLastDate, notPriority }
-
-class viewNotfications extends StatelessWidget {
+class viewNotfications extends StatefulWidget {
   final String division;
-  const viewNotfications({Key? key, required this.division}) : super(key: key);
+  final List<ListItem> items;
+  const viewNotfications({
+    Key? key,
+    required this.division,
+    required this.items,
+  }) : super(key: key);
 
+  @override
+  State<viewNotfications> createState() => _viewNotficationsState();
+}
+
+class _viewNotficationsState extends State<viewNotfications> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -30,7 +40,7 @@ class viewNotfications extends StatelessWidget {
                     colors: <Color>[Color(0xff0077b6), Color(0xff0096c7)])),
           ),
           toolbarHeight: 70,
-          title: Text(division),
+          title: Text(widget.division),
         ),
         body: SafeArea(
           child: SingleChildScrollView(
@@ -40,7 +50,18 @@ class viewNotfications extends StatelessWidget {
                 SizedBox(
                   height: 20,
                 ),
-                NotList(),
+                SortWidget(
+                  items: items,
+                  onSort: (sortedItems) {
+                    setState(() {
+                      items = sortedItems;
+                    });
+                  },
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                DraggableScrollbarWidget(),
                 /*CardList(
                   notSubject: 'CD',
                   notPriority: 4,
@@ -273,18 +294,87 @@ class CardList extends StatelessWidget {
   }
 }
 
-class NotList extends StatelessWidget {
+class DraggableScrollbarWidget extends StatefulWidget {
+  @override
+  _DraggableScrollbarPageState createState() => _DraggableScrollbarPageState();
+}
+
+class _DraggableScrollbarPageState extends State<DraggableScrollbarWidget> {
+  final ScrollController _scrollController = ScrollController();
+
+  int selectedIndex = 0;
+
+  void _showDetails(BuildContext context, List details) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Details'),
+          content: Text(details[0] + '\n' + details[1]),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Close'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 20,
-      child: ListView.builder(
-        itemCount: 5, // Set the number of items
-        itemBuilder: (BuildContext context, int index) {
-          return ListTile(
-            title: Text('Item ${index + 1}'),
-          );
-        },
+    return SizedBox(
+      height: 700,
+      child: DraggableScrollbar.arrows(
+        labelTextBuilder: (double offset) => Text("${offset ~/ 100}"),
+        controller: _scrollController,
+        child: ListView.builder(
+          controller: _scrollController,
+          itemCount: items.length,
+          itemExtent: 100.0,
+          itemBuilder: (context, index) {
+            return GestureDetector(
+              onTap: () {
+                setState(() {
+                  selectedIndex = index;
+                });
+                _showDetails(context, items[index].details);
+              },
+              child: Container(
+                padding: EdgeInsets.all(8.0),
+                decoration: BoxDecoration(
+                  color: selectedIndex == index ? Colors.blue : Colors.white,
+                  borderRadius: BorderRadius.circular(8.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 2,
+                      blurRadius: 5,
+                      offset: Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(25.0),
+                  child: Center(
+                    child: Text(
+                      items[index].title,
+                      style: TextStyle(
+                        color: selectedIndex == index
+                            ? Colors.white
+                            : Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
       ),
     );
   }

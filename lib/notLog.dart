@@ -1,10 +1,16 @@
+import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 import 'package:flutter/material.dart';
 import 'package:notify_v1/home.dart';
-import 'package:notify_v1/tst.dart';
+import 'components/sortWidget.dart';
 
-class notLog extends StatelessWidget {
+class notLog extends StatefulWidget {
   const notLog({Key? key}) : super(key: key);
 
+  @override
+  State<notLog> createState() => _notLogState();
+}
+
+class _notLogState extends State<notLog> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -34,44 +40,18 @@ class notLog extends StatelessWidget {
                 SizedBox(
                   height: 30,
                 ),
-                CardList(
-                  notSubject: 'CD',
-                  notPriorityLevel: 4,
-                  notDate: '19-04-2023',
-                  notTopic: 'SLR Parser',
-                  notType: 'Assignment',
-                  notDetails:
-                      'Submit Home Work as assignment for internal marks',
+                SortWidget(
+                  items: items,
+                  onSort: (sortedItems) {
+                    setState(() {
+                      items = sortedItems;
+                    });
+                  },
                 ),
-                CardList(
-                    notSubject: 'CGIP',
-                    notPriorityLevel: 3,
-                    notDate: '25-04-2023',
-                    notTopic: 'Module 4',
-                    notType: 'Class Test',
-                    notDetails: 'Class Test on module 4'),
-                CardList(
-                    notSubject: 'IEFT',
-                    notPriorityLevel: 2,
-                    notDate: '30-04-2023',
-                    notTopic: 'Module 3',
-                    notType: 'Class Test',
-                    notDetails:
-                        'Class Test on module 3. Bring A4 sized paper. Marks to be taken for internal exam'),
-                CardList(
-                    notSubject: 'CD',
-                    notPriorityLevel: 4,
-                    notDate: '26-04-2023',
-                    notTopic: 'Module 3-4',
-                    notType: 'Note Submition',
-                    notDetails: 'Submit notebook'),
-                CardList(
-                    notSubject: 'Networking Lab',
-                    notPriorityLevel: 5,
-                    notDate: '20-04-2023',
-                    notTopic: 'Cycle 1',
-                    notType: 'Class Test',
-                    notDetails: 'Lab exam for R6B even batch'),
+                SizedBox(
+                  height: 20,
+                ),
+                DraggableScrollbarWidget(),
               ],
             ),
           ),
@@ -81,98 +61,86 @@ class notLog extends StatelessWidget {
   }
 }
 
-class CardList extends StatelessWidget {
-  CardList(
-      {required this.notSubject,
-      required this.notPriorityLevel,
-      required this.notDate,
-      required this.notTopic,
-      required this.notType,
-      required this.notDetails});
-  String notSubject;
-  int notPriorityLevel;
-  String notDate;
-  String notTopic;
-  String notType;
-  String notDetails;
+class DraggableScrollbarWidget extends StatefulWidget {
+  @override
+  _DraggableScrollbarPageState createState() => _DraggableScrollbarPageState();
+}
+
+class _DraggableScrollbarPageState extends State<DraggableScrollbarWidget> {
+  final ScrollController _scrollController = ScrollController();
+
+  int selectedIndex = 0;
+
+  void _showDetails(BuildContext context, List details) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Details'),
+          content: Text(details[0] + '\n' + details[1]),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Close'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    Widget okButton = TextButton(onPressed: () {}, child: Text('Ok'));
-    Widget markDone = TextButton(
-      child: Text("Mark as Done"),
-      onPressed: () {},
-    );
-    return GestureDetector(
-      onTap: () {
-        showDialog(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            title: Text(notTopic),
-            content: Text(notDetails),
-            actions: [
-              okButton,
-              markDone,
-            ],
-          ),
-        );
-      },
-      child: Card(
-        elevation: 3,
-        margin: EdgeInsets.fromLTRB(25, 0, 20, 30),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10.0),
-        ),
-        color: Colors.white,
-        child: Row(
-          children: [
-            SizedBox(
-              width: 20,
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  height: 20,
+    return SizedBox(
+      height: 700,
+      child: DraggableScrollbar.arrows(
+        labelTextBuilder: (double offset) => Text("${offset ~/ 100}"),
+        controller: _scrollController,
+        child: ListView.builder(
+          controller: _scrollController,
+          itemCount: items.length,
+          itemExtent: 100.0,
+          itemBuilder: (context, index) {
+            return GestureDetector(
+              onTap: () {
+                setState(() {
+                  selectedIndex = index;
+                });
+                _showDetails(context, items[index].details);
+              },
+              child: Container(
+                padding: EdgeInsets.all(8.0),
+                decoration: BoxDecoration(
+                  color: selectedIndex == index ? Colors.blue : Colors.white,
+                  borderRadius: BorderRadius.circular(8.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 2,
+                      blurRadius: 5,
+                      offset: Offset(0, 3),
+                    ),
+                  ],
                 ),
-                Text(
-                  notSubject,
-                  style: TextStyle(fontWeight: FontWeight.w800, fontSize: 20),
+                child: Padding(
+                  padding: const EdgeInsets.all(25.0),
+                  child: Center(
+                    child: Text(
+                      items[index].title,
+                      style: TextStyle(
+                        color: selectedIndex == index
+                            ? Colors.white
+                            : Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
                 ),
-                SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  'Priority : $notPriorityLevel',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 17),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  'Type : $notType',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 17),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  'Last Date : $notDate',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 17),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  'Topic : $notTopic',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 17),
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-              ],
-            ),
-          ],
+              ),
+            );
+          },
         ),
       ),
     );

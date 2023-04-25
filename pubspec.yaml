@@ -39,7 +39,7 @@ dependencies:
   syncfusion_flutter_calendar: ^20.3.58
   intl: ^0.17.0
   select_card: ^0.0.9
-  list_wheel_scroll_view_x: ^0.0.2
+  draggable_scrollbar: ^0.1.0
 
 dev_dependencies:
   flutter_test:
