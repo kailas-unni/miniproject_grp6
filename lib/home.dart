@@ -18,18 +18,58 @@ class ListItem {
 }
 
 List<ListItem> items = [
-  ListItem(title: 'Item 10', details: ['Details for Item 1', 'hi']),
-  ListItem(title: 'Item 2', details: ['Details for Item 2', 'hello']),
-  ListItem(title: 'Item 3', details: ['Details for Item 3', 'k']),
-  ListItem(title: 'Item 4', details: ['Details for Item 4', 'hi']),
-  ListItem(title: 'hi', details: ['Details for Item 5', 'hi']),
-  ListItem(title: 'Item 1', details: ['Details for Item 6', 'hi']),
+  ListItem(title: 'Assignment', details: [
+    'CD',
+    '4',
+    '16-04-2023',
+    '19-04-2023',
+    'SLR Parser',
+    'Assignment',
+    'Submit Home Work as assignment for internal marks'
+  ]),
+  ListItem(title: 'Class Test', details: [
+    'CGIP',
+    '3',
+    '20-04-2023',
+    '25-04-2023',
+    'Module 4',
+    'Class Test',
+    'Class Test on module 4'
+  ]),
+  ListItem(title: 'Class Test', details: [
+    'IEFT',
+    '2',
+    '28-04-2023',
+    '30-04-2023',
+    'Module 3',
+    'Class Test',
+    'Class Test on module 3. Bring A4 sized paper. Marks to be taken for internal exam'
+  ]),
+  ListItem(title: 'Note Submition', details: [
+    'CD',
+    '4',
+    '25-04-2023',
+    '26-04-2023',
+    'Module 3-4',
+    'Note Submition',
+    'Submit notebook'
+  ]),
+  ListItem(title: 'Class Test', details: [
+    'Networking Lab',
+    '5',
+    '18-04-2023',
+    '20-04-2023',
+    'Cycle 1',
+    'Class Test',
+    'Lab exam for R6B even batch'
+  ]),
+  /*ListItem(title: 'Item 1', details: ['Details for Item 6', 'hi']),
   ListItem(title: 'Item 7', details: ['Details for Item 7', 'hi']),
   ListItem(title: 'Item 8', details: ['Details for Item 8', 'hi']),
   ListItem(title: 'Item 9', details: ['Details for Item 9', 'hi']),
   ListItem(title: 'Item 1', details: ['Details for Item 10', 'hi']),
   ListItem(title: 'Item 11', details: ['Details for Item 11', 'hi']),
-  ListItem(title: 'Item 12', details: ['Details for Item 12', 'hi']),
+  ListItem(title: 'Item 12', details: ['Details for Item 12', 'hi']),*/
 ];
 
 class Home extends StatefulWidget {
@@ -41,6 +81,32 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   // This widget is the root of your application.
+
+  void _showDetails(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Are you sure you want to logout?'),
+          //content: Text(details),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Ok'),
+              onPressed: () {
+                _showDetails(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,17 +129,6 @@ class _HomeState extends State<Home> {
             width: 130,
           ),
           actions: [
-            IconButton(
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => MyApp(),
-                    ));
-              },
-              icon: Icon(Icons.search),
-              color: Colors.white70,
-            ),
             IconButton(
               onPressed: () {
                 Navigator.push(
@@ -378,7 +433,26 @@ class _HorizontalListState extends State<HorizontalList> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Details'),
-          content: Text(details[0] + '\n' + details[1]),
+          content: Text('Subject : ' +
+              details[0] +
+              '\n' +
+              'Priority : ' +
+              details[1] +
+              '\n' +
+              'Issued Date : ' +
+              details[2] +
+              '\n' +
+              'Submition Date : ' +
+              details[3] +
+              '\n' +
+              'Topic : ' +
+              details[4] +
+              '\n' +
+              'Type : ' +
+              details[5] +
+              '\n' +
+              'Further Details : ' +
+              details[6]),
           actions: <Widget>[
             TextButton(
               child: Text('Close'),
@@ -425,7 +499,7 @@ class _HorizontalListState extends State<HorizontalList> {
                 padding: const EdgeInsets.all(25.0),
                 child: Center(
                   child: Text(
-                    items[index].title,
+                    items[index].title + '\n' + items[index].details[0],
                     style: TextStyle(
                       color:
                           selectedIndex == index ? Colors.white : Colors.black,

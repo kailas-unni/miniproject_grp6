@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:notify_v1/log-in.dart';
+
+import 'gouri-login.dart';
 
 class SettingsPage extends StatefulWidget {
   @override

@@ -1,90 +1,68 @@
 import 'package:flutter/material.dart';
 
-class SearchButton extends StatefulWidget {
-  const SearchButton({Key? key}) : super(key: key);
-
+class MyApp extends StatefulWidget {
   @override
-  _SearchButtonState createState() => _SearchButtonState();
+  _MyAppState createState() => _MyAppState();
 }
 
-class _SearchButtonState extends State<SearchButton> {
-  bool _expanded = false;
-  late TextEditingController _textController;
+class _MyAppState extends State<MyApp> {
+  final List<String> _wordsList = [
+    'apple',
+    'banana',
+    'cherry',
+    'date',
+    'elderberry',
+    'fig',
+    'grape',
+    'kiwi',
+    'lemon',
+    'mango',
+  ];
 
-  @override
-  void initState() {
-    super.initState();
-    _textController = TextEditingController();
+  String _searchQuery = '';
+
+  List<String> get _filteredWordsList {
+    return _wordsList
+        .where(
+            (word) => word.toLowerCase().contains(_searchQuery.toLowerCase()))
+        .toList();
   }
 
-  @override
-  void dispose() {
-    _textController.dispose();
-    super.dispose();
-  }
-
-  void _toggleExpansion() {
+  void _onSearchQueryChanged(String value) {
     setState(() {
-      _expanded = !_expanded;
+      _searchQuery = value;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-      icon: Icon(Icons.search),
-      onPressed: _toggleExpansion,
-    );
-  }
-
-  Widget _buildExpandedContent() {
-    return Row(
-      children: [
-        Expanded(
-          child: TextField(
-            controller: _textController,
-            decoration: InputDecoration(
-              hintText: 'Search...',
-              border: InputBorder.none,
-              isDense: true,
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Search Button Example'),
+        ),
+        body: Column(
+          children: [
+            TextField(
+              decoration: InputDecoration(
+                labelText: 'Search',
+                prefixIcon: Icon(Icons.search),
+              ),
+              onChanged: _onSearchQueryChanged,
             ),
-          ),
-        ),
-        IconButton(
-          icon: Icon(Icons.arrow_forward),
-          onPressed: () {
-            // Handle search submit
-          },
-        ),
-      ],
-    );
-  }
-
-  @override
-  Widget build1(BuildContext context) {
-    return Column(
-      children: [
-        SizedBox(height: MediaQuery.of(context).padding.top),
-        AppBar(
-          title: Text('My App'),
-          actions: [
-            IconButton(
-              icon: Icon(Icons.search),
-              onPressed: _toggleExpansion,
+            Expanded(
+              child: ListView.builder(
+                itemCount: _filteredWordsList.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(_filteredWordsList[index]),
+                  );
+                },
+              ),
             ),
           ],
         ),
-        AnimatedCrossFade(
-          duration: const Duration(milliseconds: 300),
-          firstChild: SizedBox.shrink(),
-          secondChild: Container(
-            color: Colors.grey[200],
-            child: _buildExpandedContent(),
-          ),
-          crossFadeState:
-              _expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
-        ),
-      ],
+      ),
     );
   }
 }

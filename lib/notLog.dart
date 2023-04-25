@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:notify_v1/home.dart';
 import 'components/sortWidget.dart';
 
+List<ListItem> filteredList = [];
+
 class notLog extends StatefulWidget {
   const notLog({Key? key}) : super(key: key);
 
@@ -11,6 +13,23 @@ class notLog extends StatefulWidget {
 }
 
 class _notLogState extends State<notLog> {
+  @override
+  void initState() {
+    super.initState();
+    filteredList = items;
+  }
+
+  void _searchList(String query) {
+    setState(() {
+      filteredList = items
+          .where((item) =>
+              item.title.toLowerCase().contains(query.toLowerCase()) ||
+              item.details.any(
+                  (sub) => sub.toLowerCase().contains(query.toLowerCase())))
+          .toList();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -38,13 +57,23 @@ class _notLogState extends State<notLog> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(
-                  height: 30,
+                  height: 10,
+                ),
+                Container(
+                  padding:
+                      EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),
+                  child: TextField(
+                    onChanged: _searchList,
+                    decoration: InputDecoration(
+                      hintText: 'Search',
+                    ),
+                  ),
                 ),
                 SortWidget(
-                  items: items,
+                  filteredList: filteredList,
                   onSort: (sortedItems) {
                     setState(() {
-                      items = sortedItems;
+                      filteredList = sortedItems;
                     });
                   },
                 ),
@@ -77,7 +106,26 @@ class _DraggableScrollbarPageState extends State<DraggableScrollbarWidget> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Details'),
-          content: Text(details[0] + '\n' + details[1]),
+          content: Text('Subject : ' +
+              details[0] +
+              '\n' +
+              'Priority : ' +
+              details[1] +
+              '\n' +
+              'Issued Date : ' +
+              details[2] +
+              '\n' +
+              'Submition Date : ' +
+              details[3] +
+              '\n' +
+              'Topic : ' +
+              details[4] +
+              '\n' +
+              'Type : ' +
+              details[5] +
+              '\n' +
+              'Further Details : ' +
+              details[6]),
           actions: <Widget>[
             TextButton(
               child: Text('Close'),
@@ -100,7 +148,7 @@ class _DraggableScrollbarPageState extends State<DraggableScrollbarWidget> {
         controller: _scrollController,
         child: ListView.builder(
           controller: _scrollController,
-          itemCount: items.length,
+          itemCount: filteredList.length,
           itemExtent: 100.0,
           itemBuilder: (context, index) {
             return GestureDetector(
@@ -108,7 +156,7 @@ class _DraggableScrollbarPageState extends State<DraggableScrollbarWidget> {
                 setState(() {
                   selectedIndex = index;
                 });
-                _showDetails(context, items[index].details);
+                _showDetails(context, filteredList[index].details);
               },
               child: Container(
                 padding: EdgeInsets.all(8.0),
@@ -128,7 +176,7 @@ class _DraggableScrollbarPageState extends State<DraggableScrollbarWidget> {
                   padding: const EdgeInsets.all(25.0),
                   child: Center(
                     child: Text(
-                      items[index].title,
+                      filteredList[index].title,
                       style: TextStyle(
                         color: selectedIndex == index
                             ? Colors.white
