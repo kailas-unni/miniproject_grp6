@@ -10,6 +10,7 @@ import 'package:notify_v1/tst.dart';
 import 'package:notify_v1/viewNotf.dart';
 //import 'package:myapp/log-in/sign-up.dart';
 import 'package:select_card/select_card.dart';
+import 'package:notify_v1/remidnerpage.dart';
 
 class ListItem {
   final String title;
@@ -122,7 +123,7 @@ class _HomeState extends State<Home> {
                     end: Alignment.centerRight,
                     colors: <Color>[Color(0xff0077b6), Color(0xff0096c7)])),
           ),
-          toolbarHeight: 70,
+          toolbarHeight: 60,
           title: Image.asset(
             'assets/images/logo.png',
             height: 130,
@@ -154,16 +155,9 @@ class _HomeState extends State<Home> {
                   child: Text(
                     'Pending Events',
                     style: TextStyle(
-                      fontSize: 32,
-                      color: Colors.black,
+                      fontFamily: 'Montserrat',
+                      fontSize: 25,
                       fontWeight: FontWeight.bold,
-                      shadows: [
-                        Shadow(
-                          blurRadius: 4,
-                          color: Colors.black38.withOpacity(0.25),
-                          offset: Offset(0, 4),
-                        ),
-                      ],
                     ),
                   ),
                 ),
@@ -178,8 +172,8 @@ class _HomeState extends State<Home> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Container(
-                      height: 140,
-                      width: 140,
+                      height: 100,
+                      width: 100,
                       child: Card(
                         semanticContainer: true,
                         clipBehavior: Clip.antiAliasWithSaveLayer,
@@ -195,11 +189,15 @@ class _HomeState extends State<Home> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Image.asset('assets/images/calendar.png'),
+                              Image.asset(
+                                'assets/images/calendar.png',
+                                fit: BoxFit.contain,
+                                width: 50,
+                              ),
                               Text(
                                 'Calendar',
                                 style: TextStyle(
-                                    fontWeight: FontWeight.w800, fontSize: 18),
+                                    fontWeight: FontWeight.w800, fontSize: 13),
                               ),
                             ],
                           ),
@@ -210,12 +208,46 @@ class _HomeState extends State<Home> {
                         elevation: 3,
                       ),
                     ),
-                    SizedBox(
-                      width: 30,
+                    Container(
+                      height: 100,
+                      width: 100,
+                      child: Card(
+                        semanticContainer: true,
+                        clipBehavior: Clip.antiAliasWithSaveLayer,
+                        color: Colors.white,
+                        child: new InkWell(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ReminderPage(),
+                                ));
+                          },
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                'assets/images/reminder.png',
+                                fit: BoxFit.contain,
+                                width: 50,
+                              ),
+                              Text(
+                                'Reminders',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w800, fontSize: 13),
+                              ),
+                            ],
+                          ),
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        elevation: 3,
+                      ),
                     ),
                     Container(
-                      height: 140,
-                      width: 140,
+                      height: 100,
+                      width: 100,
                       child: Card(
                         semanticContainer: true,
                         clipBehavior: Clip.antiAliasWithSaveLayer,
@@ -233,11 +265,13 @@ class _HomeState extends State<Home> {
                             children: [
                               Image.asset(
                                 'assets/images/notlog.png',
+                                fit: BoxFit.contain,
+                                width: 50,
                               ),
                               Text(
                                 'Notification Log',
                                 style: TextStyle(
-                                    fontWeight: FontWeight.w800, fontSize: 18),
+                                    fontWeight: FontWeight.w800, fontSize: 13),
                               ),
                             ],
                           ),
@@ -293,7 +327,7 @@ class CardList extends StatelessWidget {
       },
       child: Card(
         elevation: 3,
-        margin: EdgeInsets.fromLTRB(25, 0, 20, 30),
+        margin: EdgeInsets.fromLTRB(25, 0, 20, 25),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
         ),
@@ -307,7 +341,7 @@ class CardList extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(
-                  height: 20,
+                  height: 10,
                 ),
                 Text(
                   notTitle,
@@ -328,7 +362,7 @@ class CardList extends StatelessWidget {
                   style: TextStyle(fontWeight: FontWeight.w600, fontSize: 17),
                 ),
                 SizedBox(
-                  height: 20,
+                  height: 10,
                 ),
               ],
             ),
@@ -469,7 +503,7 @@ class _HorizontalListState extends State<HorizontalList> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 100,
+      height: 85,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: items.length,
