@@ -3,10 +3,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:notify_v1/gouri-login.dart';
 import 'package:flutter/services.dart';
 import 'package:notify_v1/home.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 //Time Zone initialization
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 

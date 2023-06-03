@@ -1,5 +1,7 @@
 import 'dart:ffi';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:notify_v1/calendar.dart';
 import 'package:notify_v1/components/searchWidget.dart';
@@ -11,6 +13,7 @@ import 'package:notify_v1/viewNotf.dart';
 //import 'package:myapp/log-in/sign-up.dart';
 import 'package:select_card/select_card.dart';
 import 'package:notify_v1/remidnerpage.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ListItem {
   final String title;
@@ -82,6 +85,26 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   // This widget is the root of your application.
+  final _firestore = FirebaseFirestore.instance;
+  final _auth = FirebaseAuth.instance;
+  dynamic loggedInUser;
+
+  void initState() {
+    super.initState();
+    GetCurrentUser();
+  }
+
+  void GetCurrentUser() async {
+    try {
+      final user = await _auth.currentUser;
+      if (user != null) {
+        loggedInUser = user;
+        print(loggedInUser.email);
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
 
   void _showDetails(BuildContext context) {
     showDialog(

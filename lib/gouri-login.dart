@@ -1,8 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:notify_v1/gouri-signup.dart';
 import 'package:notify_v1/home.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class LogIn extends StatelessWidget {
+class LogIn extends StatefulWidget {
+  @override
+  State<LogIn> createState() => _LogInState();
+}
+
+class _LogInState extends State<LogIn> {
+  final _auth = FirebaseAuth.instance;
+  late String email;
+  late String password;
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -54,9 +64,13 @@ class LogIn extends StatelessWidget {
                           width: 7.0,
                           height: 37.0,
                           child: TextField(
+                            keyboardType: TextInputType.emailAddress,
+                            onChanged: (value) {
+                              email = value;
+                            },
                             decoration: InputDecoration(
                               border: InputBorder.none,
-                              hintText: 'Username',
+                              hintText: 'Email',
                             ),
                           ),
                         ),
@@ -77,30 +91,10 @@ class LogIn extends StatelessWidget {
                           width: 7.0,
                           height: 37.0,
                           child: TextField(
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: 'Password',
-                            ),
-                          ),
-                        ),
-                      ))),
-              Card(
-                  color: Colors.white70,
-                  margin:
-                      EdgeInsets.symmetric(vertical: 40.0, horizontal: 40.0),
-                  //padding: EdgeInsets.all(5),
-                  child: Padding(
-                      padding: EdgeInsets.all(0.05),
-                      child: ListTile(
-                        leading: Icon(
-                          Icons.lock,
-                          size: 28,
-                          color: Color.fromARGB(255, 214, 162, 222),
-                        ),
-                        title: SizedBox(
-                          width: 7.0,
-                          height: 37.0,
-                          child: TextField(
+                            obscureText: true,
+                            onChanged: (value) {
+                              password = value;
+                            },
                             decoration: InputDecoration(
                               border: InputBorder.none,
                               hintText: 'Password',
@@ -109,7 +103,7 @@ class LogIn extends StatelessWidget {
                         ),
                       ))),
               SizedBox(
-                height: 20,
+                height: 80,
               ),
               Container(
                 width: 120,
@@ -130,11 +124,36 @@ class LogIn extends StatelessWidget {
                           borderRadius: BorderRadius.circular(10.0)),
                     ),
                     child: const Text('Login'),
-                    onPressed: () {
-                      Navigator.pushReplacement(context,
-                          MaterialPageRoute(builder: (context) {
-                        return Home();
-                      }));
+                    onPressed: () async {
+                      try {
+                        final user = await _auth.signInWithEmailAndPassword(
+                            email: email, password: password);
+                        if (user != Null) {
+                          Navigator.pushReplacement(context,
+                              MaterialPageRoute(builder: (context) {
+                            return Home();
+                          }));
+                        }
+                      } catch (e) {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text('Error'),
+                              content: Text(e.toString()),
+                              actions: [
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.of(context)
+                                        .pop(); // Close the dialog
+                                  },
+                                  child: Text('OK'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      }
                     },
                   ),
                 ),

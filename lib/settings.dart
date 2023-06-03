@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'gouri-login.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class SettingsPage extends StatefulWidget {
   @override
@@ -8,6 +9,7 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
+  final _auth = FirebaseAuth.instance;
   bool _notificationsEnabled = true;
   void _showDetails(BuildContext context) {
     showDialog(
@@ -26,10 +28,12 @@ class _SettingsPageState extends State<SettingsPage> {
             TextButton(
               child: Text('Ok'),
               onPressed: () {
-                Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) {
-                  return LogIn();
-                }));
+                _auth.signOut();
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => LogIn(), maintainState: true),
+                    (Route<dynamic> route) => false);
               },
             ),
           ],
