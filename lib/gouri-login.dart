@@ -1,17 +1,25 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:notify_v1/gouri-signup.dart';
 import 'package:notify_v1/home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:notify_v1/facultyHome.dart';
 
 class LogIn extends StatefulWidget {
   @override
   State<LogIn> createState() => _LogInState();
 }
 
+final _firestore = FirebaseFirestore.instance;
+
 class _LogInState extends State<LogIn> {
   final _auth = FirebaseAuth.instance;
+  final _auth1 = FirebaseAuth.instance;
+  final _auth2 = FirebaseAuth.instance;
   late String email;
   late String password;
+  late String? _selectedOption = "STUDENT";
+  int flag = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -47,6 +55,32 @@ class _LogInState extends State<LogIn> {
                   child: Divider(
                     color: Colors.white,
                   )),
+              Card(
+                color: Colors.white70,
+                margin: EdgeInsets.symmetric(vertical: 0.0, horizontal: 40.0),
+                child: DropdownButton<String>(
+                  isExpanded: true,
+                  iconEnabledColor: Color.fromARGB(255, 214, 162, 222),
+                  iconSize: 60,
+                  value: _selectedOption,
+                  items: <String>[
+                    'STUDENT',
+                    'REPRESENTATIVES',
+                    'FACULTY',
+                  ].map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    // Change function parameter to nullable string
+                    setState(() {
+                      _selectedOption = newValue;
+                    });
+                  },
+                ),
+              ),
               Card(
                   color: Colors.white70,
                   margin:
@@ -125,22 +159,136 @@ class _LogInState extends State<LogIn> {
                     ),
                     child: const Text('Login'),
                     onPressed: () async {
-                      try {
-                        final user = await _auth.signInWithEmailAndPassword(
-                            email: email, password: password);
-                        if (user != Null) {
-                          Navigator.pushReplacement(context,
-                              MaterialPageRoute(builder: (context) {
-                            return Home();
-                          }));
+                      print(_selectedOption);
+                      if (_selectedOption == "STUDENT") {
+                        await for (var snapshot in _firestore
+                            .collection('studentDetails')
+                            .snapshots()) {
+                          for (var user in snapshot.docs) {
+                            if (email == user.data()['email']) {
+                              try {
+                                final user =
+                                    await _auth.signInWithEmailAndPassword(
+                                        email: email, password: password);
+                                if (user != Null) {
+                                  print("Inside");
+                                  Navigator.pushReplacement(context,
+                                      MaterialPageRoute(builder: (context) {
+                                    return Home();
+                                  }));
+                                }
+                              } catch (e) {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text('Error'),
+                                      content: Text(e.toString()),
+                                      actions: [
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            Navigator.of(context)
+                                                .pop(); // Close the dialog
+                                          },
+                                          child: Text('OK'),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              }
+                            }
+                          }
                         }
-                      } catch (e) {
+                      } else if (_selectedOption == "FACULTY") {
+                        await for (var snapshot in _firestore
+                            .collection('facultyDetails')
+                            .snapshots()) {
+                          for (var user in snapshot.docs) {
+                            if (email == user.data()['email']) {
+                              try {
+                                final user =
+                                    await _auth1.signInWithEmailAndPassword(
+                                        email: email, password: password);
+                                if (user != Null) {
+                                  print("Inside");
+                                  Navigator.pushReplacement(context,
+                                      MaterialPageRoute(builder: (context) {
+                                    return AdminHome();
+                                  }));
+                                }
+                              } catch (e) {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text('Error'),
+                                      content: Text(e.toString()),
+                                      actions: [
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            Navigator.of(context)
+                                                .pop(); // Close the dialog
+                                          },
+                                          child: Text('OK'),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              }
+                            }
+                          }
+                        }
+                      } else {
+                        await for (var snapshot in _firestore
+                            .collection('repsDetails')
+                            .snapshots()) {
+                          for (var user in snapshot.docs) {
+                            if (email == user.data()['email']) {
+                              try {
+                                final user =
+                                    await _auth2.signInWithEmailAndPassword(
+                                        email: email, password: password);
+                                if (user != Null) {
+                                  print("Inside");
+                                  Navigator.pushReplacement(context,
+                                      MaterialPageRoute(builder: (context) {
+                                    return AdminHome();
+                                  }));
+                                }
+                              } catch (e) {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text('Error'),
+                                      content: Text(e.toString()),
+                                      actions: [
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            Navigator.of(context)
+                                                .pop(); // Close the dialog
+                                          },
+                                          child: Text('OK'),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              }
+                            }
+                          }
+                        }
+                      }
+                      print("Outside");
+                      if (flag == 0) {
                         showDialog(
                           context: context,
                           builder: (BuildContext context) {
                             return AlertDialog(
                               title: Text('Error'),
-                              content: Text(e.toString()),
+                              content: Text('Invalid Authentication Details'),
                               actions: [
                                 ElevatedButton(
                                   onPressed: () {

@@ -1,28 +1,27 @@
 import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 import 'package:flutter/material.dart';
-import 'package:notify_v1/home.dart';
-import 'components/sortWidget.dart';
+import 'package:notify_v1/facultyEdit.dart';
+import 'package:notify_v1/facultyHome.dart';
+import 'components/sortFacultyClassWidget.dart';
 
-List<ListItem> filteredList = [];
+List<ClassItem> filteredList = [];
 
-class viewNotfications extends StatefulWidget {
+class FacultyClasses extends StatefulWidget {
   final String division;
-  final List<ListItem> items;
-  const viewNotfications({
+  const FacultyClasses({
     Key? key,
     required this.division,
-    required this.items,
   }) : super(key: key);
 
   @override
-  State<viewNotfications> createState() => _viewNotficationsState();
+  State<FacultyClasses> createState() => _FacultyClassesState();
 }
 
-class _viewNotficationsState extends State<viewNotfications> {
-  @override
+class _FacultyClassesState extends State<FacultyClasses> {
   void initState() {
     super.initState();
-    filteredList = items;
+    filteredList =
+        items.where((item) => item.facname == widget.division).toList();
   }
 
   void _searchList(String query) {
@@ -31,12 +30,11 @@ class _viewNotficationsState extends State<viewNotfications> {
           .where((item) =>
               item.title.toLowerCase().contains(query.toLowerCase()) ||
               item.details.toLowerCase().contains(query.toLowerCase()) ||
-              item.title.toLowerCase().contains(query.toLowerCase()) ||
               item.topic.toLowerCase().contains(query.toLowerCase()) ||
-              item.type.toLowerCase().contains(query.toLowerCase()) ||
               item.priority.toString().contains(query.toLowerCase()) ||
               item.submitiondate.toString().contains(query.toLowerCase()) ||
               item.issueddate.toString().contains(query.toLowerCase()))
+          .where((item) => item.facname == widget.division)
           .toList();
     });
   }
@@ -52,7 +50,7 @@ class _viewNotficationsState extends State<viewNotfications> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => Home(),
+                      builder: (context) => AdminHome(),
                     ));
               },
               child: Icon(Icons.arrow_back)),
@@ -64,7 +62,7 @@ class _viewNotficationsState extends State<viewNotfications> {
                     colors: <Color>[Color(0xff0077b6), Color(0xff0096c7)])),
           ),
           toolbarHeight: 70,
-          title: Text(widget.division),
+          title: Text("Logs"),
         ),
         body: SafeArea(
           child: SingleChildScrollView(
@@ -118,7 +116,7 @@ class _DraggableScrollbarPageState extends State<DraggableScrollbarWidget> {
 
   int selectedIndex = 0;
 
-  void _showDetails(BuildContext context, ListItem details) {
+  void _showDetails(BuildContext context, ClassItem details) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -127,20 +125,23 @@ class _DraggableScrollbarPageState extends State<DraggableScrollbarWidget> {
           content: Text('Subject : ' +
               details.title +
               '\n' +
+              'Class : ' +
+              details.batch +
+              '\n' +
+              'Faculty : ' +
+              details.facname +
+              '\n' +
               'Priority : ' +
               details.priority.toString() +
               '\n' +
               'Issued Date : ' +
-              details.issueddate.toString() +
+              details.issueddate +
               '\n' +
               'Submition Date : ' +
-              details.submitiondate.toString() +
+              details.submitiondate +
               '\n' +
               'Topic : ' +
               details.topic +
-              '\n' +
-              'Type : ' +
-              details.type +
               '\n' +
               'Further Details : ' +
               details.details +
@@ -149,9 +150,13 @@ class _DraggableScrollbarPageState extends State<DraggableScrollbarWidget> {
               details.read.toString()),
           actions: <Widget>[
             TextButton(
-              child: Text('Mark as done'),
+              child: Text('Edit'),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return EditNotificationPage(
+                    division: details.id,
+                  );
+                }));
               },
             ),
             TextButton(

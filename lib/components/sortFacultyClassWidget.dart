@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:notify_v1/home.dart';
+import 'package:notify_v1/facultyHome.dart';
 
 class SortWidget extends StatefulWidget {
-  final List<ListItem> filteredList;
-  final void Function(List<ListItem> sortedItems) onSort;
+  final List<ClassItem> filteredList;
+  final void Function(List<ClassItem> sortedItems) onSort;
 
   const SortWidget({
     Key? key,
@@ -17,7 +17,7 @@ class SortWidget extends StatefulWidget {
 
 class _SortWidgetState extends State<SortWidget> {
   int _sortIndex = 0;
-  List<ListItem> _sortedItems = [];
+  List<ClassItem> _sortedItems = [];
 
   void _sort() {
     setState(() {

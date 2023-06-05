@@ -1,6 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.notify_v1">
-   <application
+
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <application
         android:label="notify_v1"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">

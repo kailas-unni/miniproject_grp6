@@ -123,7 +123,7 @@ class _DraggableScrollbarWidgetState extends State<DraggableScrollbarWidget> {
           return GestureDetector(
             onTap: () {
               widget.onIndexChanged(index); // Update the selectedIndex
-              widget.showDetailsCallback(context, item.details);
+              // widget.showDetailsCallback(context, item.details);
             },
             child: Container(
               padding: EdgeInsets.all(8.0),

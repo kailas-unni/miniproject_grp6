@@ -24,8 +24,13 @@ class _notLogState extends State<notLog> {
       filteredList = items
           .where((item) =>
               item.title.toLowerCase().contains(query.toLowerCase()) ||
-              item.details.any(
-                  (sub) => sub.toLowerCase().contains(query.toLowerCase())))
+              item.details.toLowerCase().contains(query.toLowerCase()) ||
+              item.title.toLowerCase().contains(query.toLowerCase()) ||
+              item.topic.toLowerCase().contains(query.toLowerCase()) ||
+              item.type.toLowerCase().contains(query.toLowerCase()) ||
+              item.priority.toString().contains(query.toLowerCase()) ||
+              item.submitiondate.toString().contains(query.toLowerCase()) ||
+              item.issueddate.toString().contains(query.toLowerCase()))
           .toList();
     });
   }
@@ -100,32 +105,35 @@ class _DraggableScrollbarPageState extends State<DraggableScrollbarWidget> {
 
   int selectedIndex = 0;
 
-  void _showDetails(BuildContext context, List details) {
+  void _showDetails(BuildContext context, ListItem details) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Details'),
           content: Text('Subject : ' +
-              details[0] +
+              details.title +
               '\n' +
               'Priority : ' +
-              details[1] +
+              details.priority.toString() +
               '\n' +
               'Issued Date : ' +
-              details[2] +
+              details.issueddate.toString() +
               '\n' +
               'Submition Date : ' +
-              details[3] +
+              details.submitiondate.toString() +
               '\n' +
               'Topic : ' +
-              details[4] +
+              details.topic +
               '\n' +
               'Type : ' +
-              details[5] +
+              details.type +
               '\n' +
               'Further Details : ' +
-              details[6]),
+              details.details +
+              '\n' +
+              'Read : ' +
+              details.read.toString()),
           actions: <Widget>[
             TextButton(
               child: Text('Close'),
@@ -156,7 +164,7 @@ class _DraggableScrollbarPageState extends State<DraggableScrollbarWidget> {
                 setState(() {
                   selectedIndex = index;
                 });
-                _showDetails(context, filteredList[index].details);
+                _showDetails(context, filteredList[index]);
               },
               child: Container(
                 padding: EdgeInsets.all(8.0),

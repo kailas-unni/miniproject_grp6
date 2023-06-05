@@ -14,67 +14,114 @@ import 'package:notify_v1/viewNotf.dart';
 import 'package:select_card/select_card.dart';
 import 'package:notify_v1/remidnerpage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
+import 'package:notify_v1/viewOfficalNotf.dart';
 
 class ListItem {
   final String title;
-  final List<String> details;
-  ListItem({required this.title, required this.details});
+  final String details;
+  final String topic;
+  final String type;
+  final int priority;
+  final String facname;
+  final DateTime issueddate;
+  final DateTime submitiondate;
+  final bool read;
+  ListItem(
+      {required this.title,
+      required this.details,
+      required this.topic,
+      required this.issueddate,
+      required this.priority,
+      required this.submitiondate,
+      required this.type,
+      required this.facname,
+      required this.read});
 }
 
-List<ListItem> items = [
-  ListItem(title: 'Assignment', details: [
-    'CD',
-    '4',
-    '16-04-2023',
-    '19-04-2023',
-    'SLR Parser',
-    'Assignment',
-    'Submit Home Work as assignment for internal marks'
-  ]),
-  ListItem(title: 'Class Test', details: [
-    'CGIP',
-    '3',
-    '20-04-2023',
-    '25-04-2023',
-    'Module 4',
-    'Class Test',
-    'Class Test on module 4'
-  ]),
-  ListItem(title: 'Class Test', details: [
-    'IEFT',
-    '2',
-    '28-04-2023',
-    '30-04-2023',
-    'Module 3',
-    'Class Test',
-    'Class Test on module 3. Bring A4 sized paper. Marks to be taken for internal exam'
-  ]),
-  ListItem(title: 'Note Submition', details: [
-    'CD',
-    '4',
-    '25-04-2023',
-    '26-04-2023',
-    'Module 3-4',
-    'Note Submition',
-    'Submit notebook'
-  ]),
-  ListItem(title: 'Class Test', details: [
-    'Networking Lab',
-    '5',
-    '18-04-2023',
-    '20-04-2023',
-    'Cycle 1',
-    'Class Test',
-    'Lab exam for R6B even batch'
-  ]),
-  /*ListItem(title: 'Item 1', details: ['Details for Item 6', 'hi']),
-  ListItem(title: 'Item 7', details: ['Details for Item 7', 'hi']),
-  ListItem(title: 'Item 8', details: ['Details for Item 8', 'hi']),
-  ListItem(title: 'Item 9', details: ['Details for Item 9', 'hi']),
-  ListItem(title: 'Item 1', details: ['Details for Item 10', 'hi']),
-  ListItem(title: 'Item 11', details: ['Details for Item 11', 'hi']),
-  ListItem(title: 'Item 12', details: ['Details for Item 12', 'hi']),*/
-];
+List<ListItem> items = [];
+
+class OfficialItem {
+  final String details;
+  final String title;
+  final String topic;
+  final int priority;
+  final String issueddate;
+  final String submitiondate;
+  final String facname;
+  final bool read;
+  final String classs;
+  OfficialItem(
+      {required this.title,
+      required this.details,
+      required this.topic,
+      required this.issueddate,
+      required this.priority,
+      required this.submitiondate,
+      required this.facname,
+      required this.read,
+      required this.classs});
+}
+
+List<OfficialItem> officialitems = [];
+
+int countClass = 0;
+int countOfficial = 0;
+
+// List<ListItem> items = [
+//   ListItem(title: 'Assignment', details: [
+//     'CD',
+//     '4',
+//     '16-04-2023',
+//     '19-04-2023',
+//     'SLR Parser',
+//     'Assignment',
+//     'Submit Home Work as assignment for internal marks'
+//   ]),
+//   ListItem(title: 'Class Test', details: [
+//     'CGIP',
+//     '3',
+//     '20-04-2023',
+//     '25-04-2023',
+//     'Module 4',
+//     'Class Test',
+//     'Class Test on module 4'
+//   ]),
+//   ListItem(title: 'Class Test', details: [
+//     'IEFT',
+//     '2',
+//     '28-04-2023',
+//     '30-04-2023',
+//     'Module 3',
+//     'Class Test',
+//     'Class Test on module 3. Bring A4 sized paper. Marks to be taken for internal exam'
+//   ]),
+//   ListItem(title: 'Note Submition', details: [
+//     'CD',
+//     '4',
+//     '25-04-2023',
+//     '26-04-2023',
+//     'Module 3-4',
+//     'Note Submition',
+//     'Submit notebook'
+//   ]),
+//   ListItem(title: 'Class Test', details: [
+//     'Networking Lab',
+//     '5',
+//     '18-04-2023',
+//     '20-04-2023',
+//     'Cycle 1',
+//     'Class Test',
+//     'Lab exam for R6B even batch'
+//   ]),
+//   /*ListItem(title: 'Item 1', details: ['Details for Item 6', 'hi']),
+//   ListItem(title: 'Item 7', details: ['Details for Item 7', 'hi']),
+//   ListItem(title: 'Item 8', details: ['Details for Item 8', 'hi']),
+//   ListItem(title: 'Item 9', details: ['Details for Item 9', 'hi']),
+//   ListItem(title: 'Item 1', details: ['Details for Item 10', 'hi']),
+//   ListItem(title: 'Item 11', details: ['Details for Item 11', 'hi']),
+//   ListItem(title: 'Item 12', details: ['Details for Item 12', 'hi']),*/
+// ];
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -83,15 +130,18 @@ class Home extends StatefulWidget {
   State<Home> createState() => _HomeState();
 }
 
+final _firestore = FirebaseFirestore.instance;
+final _auth = FirebaseAuth.instance;
+dynamic loggedInUser;
+
 class _HomeState extends State<Home> {
   // This widget is the root of your application.
-  final _firestore = FirebaseFirestore.instance;
-  final _auth = FirebaseAuth.instance;
-  dynamic loggedInUser;
 
   void initState() {
     super.initState();
     GetCurrentUser();
+    fetchOfficialItems();
+    countData();
   }
 
   void GetCurrentUser() async {
@@ -132,6 +182,70 @@ class _HomeState extends State<Home> {
     );
   }
 
+  // void fetchClassItems() async {
+  //   final snapshot =
+  //       await FirebaseFirestore.instance.collection('classData').get();
+  //
+  //   final fetchedItems = snapshot.docs.map((doc) {
+  //     final data = doc.data();
+  //     return ListItem(
+  //       title: data['subject'],
+  //       details: data['details'],
+  //       topic: data['topic'],
+  //       type: data['type'],
+  //       priority: data['priority'],
+  //       issueddate: data['issueddate'].toDate(),
+  //       submitiondate: data['submitiondate'].toDate(),
+  //       read: data['read'],
+  //     );
+  //   }).toList();
+  //
+  //   setState(() {
+  //     items = fetchedItems;
+  //   });
+  // }
+
+  void fetchOfficialItems() async {
+    final snapshot =
+        await FirebaseFirestore.instance.collection('officialData').get();
+
+    final fetchedItems = snapshot.docs.map((doc) {
+      final data = doc.data();
+      return OfficialItem(
+        title: data['title'],
+        details: data['details'],
+        topic: data['topic'],
+        priority: data['priority'],
+        issueddate: data['issueddate'],
+        submitiondate: data['submitiondate'],
+        read: data['read'],
+        facname: data['facname'],
+        classs: data['class'],
+      );
+    }).toList();
+
+    setState(() {
+      officialitems = fetchedItems;
+    });
+  }
+
+  void countData() {
+    countClass = 0;
+    countOfficial = 0;
+    for (var i = 0; i < items.length; i++) {
+      if (items[i].read == false) {
+        print("hellooo");
+        countClass++;
+      }
+    }
+    for (var i = 0; i < officialitems.length; i++) {
+      if (officialitems[i].read == false) {
+        print("hiiii");
+        countOfficial++;
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -149,10 +263,21 @@ class _HomeState extends State<Home> {
           toolbarHeight: 60,
           title: Image.asset(
             'assets/images/logo.png',
-            height: 130,
-            width: 130,
+            height: 120,
+            width: 120,
           ),
           actions: [
+            IconButton(
+              onPressed: () {
+                // Navigator.pop(context); // pop current page
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) {
+                  return Home();
+                }));
+              },
+              icon: Icon(Icons.refresh),
+              color: Colors.white70,
+            ),
             IconButton(
               onPressed: () {
                 Navigator.push(
@@ -171,6 +296,7 @@ class _HomeState extends State<Home> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
+                MessageStream(),
                 SizedBox(
                   height: 20,
                 ),
@@ -188,6 +314,10 @@ class _HomeState extends State<Home> {
                   height: 20,
                 ),
                 HorizontalList(),
+                SizedBox(
+                  height: 30,
+                ),
+                HorizontalList1(),
                 SizedBox(
                   height: 30,
                 ),
@@ -312,10 +442,13 @@ class _HomeState extends State<Home> {
                 ),
                 CardList(
                   notTitle: 'Class',
-                  notActive: 6,
-                  notTotal: 10,
+                  notActive: countClass,
+                  notTotal: items.length,
                 ),
-                CardList(notTitle: 'Official', notTotal: 12, notActive: 7),
+                CardList(
+                    notTitle: 'Official',
+                    notActive: countOfficial,
+                    notTotal: officialitems.length),
                 CardList(notTitle: 'Websites', notTotal: 20, notActive: 9),
               ],
             ),
@@ -341,12 +474,22 @@ class CardList extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return viewNotfications(
-            division: notTitle,
-            items: items,
-          );
-        }));
+        if (notTitle == "Class") {
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return viewNotfications(
+              division: notTitle,
+              items: items,
+            );
+          }));
+        }
+        if (notTitle == "Official") {
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return viewOfficialNotfications(
+              division: notTitle,
+              officialitems: officialitems,
+            );
+          }));
+        }
       },
       child: Card(
         elevation: 3,
@@ -484,32 +627,38 @@ class HorizontalList extends StatefulWidget {
 class _HorizontalListState extends State<HorizontalList> {
   int selectedIndex = 0;
 
-  void _showDetails(BuildContext context, List details) {
+  void _showDetails(BuildContext context, ListItem details) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Details'),
           content: Text('Subject : ' +
-              details[0] +
+              details.title +
               '\n' +
               'Priority : ' +
-              details[1] +
+              details.priority.toString() +
               '\n' +
               'Issued Date : ' +
-              details[2] +
+              details.issueddate.toString() +
               '\n' +
               'Submition Date : ' +
-              details[3] +
+              details.submitiondate.toString() +
               '\n' +
               'Topic : ' +
-              details[4] +
+              details.topic +
               '\n' +
               'Type : ' +
-              details[5] +
+              details.type +
+              '\n' +
+              'Faculty Name : ' +
+              details.facname +
               '\n' +
               'Further Details : ' +
-              details[6]),
+              details.details +
+              '\n' +
+              'Read : ' +
+              details.read.toString()),
           actions: <Widget>[
             TextButton(
               child: Text('Close'),
@@ -529,46 +678,298 @@ class _HorizontalListState extends State<HorizontalList> {
       height: 85,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: items.length,
+        itemCount: items.length + 1,
         itemBuilder: (context, index) {
-          return GestureDetector(
-            onTap: () {
-              setState(() {
-                selectedIndex = index;
-              });
-              _showDetails(context, items[index].details);
-            },
-            child: Container(
+          if (index == 0) {
+            // Render the fixed box at index 0
+            return Container(
               margin: EdgeInsets.symmetric(horizontal: 8.0),
               decoration: BoxDecoration(
-                color: selectedIndex == index ? Colors.blue : Colors.white,
+                color: Colors.grey,
                 borderRadius: BorderRadius.circular(8.0),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.5),
-                    spreadRadius: 2,
-                    blurRadius: 5,
-                    offset: Offset(0, 3),
-                  ),
-                ],
               ),
               child: Padding(
                 padding: const EdgeInsets.all(25.0),
                 child: Center(
-                  child: Text(
-                    items[index].title + '\n' + items[index].details[0],
-                    style: TextStyle(
-                      color:
-                          selectedIndex == index ? Colors.white : Colors.black,
-                      fontWeight: FontWeight.bold,
+                  child: RotatedBox(
+                    quarterTurns:
+                        3, // Rotates the text 270 degrees counter-clockwise
+                    child: Transform(
+                      alignment: Alignment.center,
+                      transform: Matrix4.rotationZ(
+                          0.0), // Applies a transformation to the text
+                      child: Text(
+                        'Class',
+                        style: TextStyle(fontSize: 14),
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          );
+            );
+          } else {
+            // Render the iterative boxes for the items
+            index = index - 1;
+            return GestureDetector(
+              onTap: () {
+                setState(() {
+                  selectedIndex = index;
+                });
+                _showDetails(context, items[index]);
+              },
+              child: Container(
+                margin: EdgeInsets.symmetric(horizontal: 8.0),
+                decoration: BoxDecoration(
+                  color: selectedIndex == index ? Colors.blue : Colors.white,
+                  borderRadius: BorderRadius.circular(8.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 2,
+                      blurRadius: 5,
+                      offset: Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(25.0),
+                  child: Center(
+                    child: Text(
+                      items[index].title + '\n' + items[index].type,
+                      style: TextStyle(
+                        color: selectedIndex == index
+                            ? Colors.white
+                            : Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }
         },
       ),
     );
   }
 }
+
+//---------------------chatgpt horizontal scroll
+class HorizontalList1 extends StatefulWidget {
+  @override
+  _HorizontalListState1 createState() => _HorizontalListState1();
+}
+
+class _HorizontalListState1 extends State<HorizontalList1> {
+  int selectedIndex = 0;
+
+  void _showDetails(BuildContext context, OfficialItem details) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Details'),
+          content: Text('Title : ' +
+              details.title +
+              '\n' +
+              'Priority : ' +
+              details.priority.toString() +
+              '\n' +
+              'Class : ' +
+              details.classs +
+              '\n' +
+              'Issued Date : ' +
+              details.issueddate +
+              '\n' +
+              'Submition Date : ' +
+              details.submitiondate +
+              '\n' +
+              'Topic : ' +
+              details.topic +
+              '\n' +
+              'Faculty Name : ' +
+              details.facname +
+              '\n' +
+              'Further Details : ' +
+              details.details +
+              '\n' +
+              'Read : ' +
+              details.read.toString()),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Close'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 85,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: officialitems.length + 1,
+        itemBuilder: (context, index) {
+          if (index == 0) {
+            // Render the fixed box at index 0
+            return Container(
+              margin: EdgeInsets.symmetric(horizontal: 8.0),
+              decoration: BoxDecoration(
+                color: Colors.grey,
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(25.0),
+                child: Center(
+                  child: RotatedBox(
+                    quarterTurns:
+                        3, // Rotates the text 270 degrees counter-clockwise
+                    child: Transform(
+                      alignment: Alignment.center,
+                      transform: Matrix4.rotationZ(
+                          0.0), // Applies a transformation to the text
+                      child: Text(
+                        'Official',
+                        style: TextStyle(fontSize: 11),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          } else {
+            // Render the iterative boxes for the items
+            index = index - 1;
+            return GestureDetector(
+              onTap: () {
+                setState(() {
+                  selectedIndex = index;
+                });
+                _showDetails(context, officialitems[index]);
+              },
+              child: Container(
+                margin: EdgeInsets.symmetric(horizontal: 8.0),
+                decoration: BoxDecoration(
+                  color: selectedIndex == index ? Colors.blue : Colors.white,
+                  borderRadius: BorderRadius.circular(8.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 2,
+                      blurRadius: 5,
+                      offset: Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(25.0),
+                  child: Center(
+                    child: Text(
+                      officialitems[index].title +
+                          '\n' +
+                          officialitems[index].topic,
+                      style: TextStyle(
+                        color: selectedIndex == index
+                            ? Colors.white
+                            : Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }
+        },
+      ),
+    );
+  }
+}
+
+class MessageStream extends StatefulWidget {
+  @override
+  _MessageStreamState createState() => _MessageStreamState();
+}
+
+class _MessageStreamState extends State<MessageStream> {
+  @override
+  void initState() {
+    super.initState();
+    fetchClassItems();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container();
+  }
+
+  void fetchClassItems() async {
+    final snapshot =
+        await FirebaseFirestore.instance.collection('classData').get();
+
+    final fetchedItems = snapshot.docs.map((doc) {
+      final data = doc.data();
+      return ListItem(
+        title: data['subject'],
+        details: data['details'],
+        topic: data['topic'],
+        type: data['type'],
+        priority: data['priority'],
+        issueddate: data['issueddate'].toDate(),
+        submitiondate: data['submitiondate'].toDate(),
+        read: data['read'],
+        facname: data['facname'],
+      );
+    }).toList();
+
+    setState(() {
+      items = fetchedItems;
+    });
+  }
+}
+
+// for (var event in events!) {
+// // final messageText = message.data()['text'];
+// // final messageSender = message.data()['sender'];
+// bool flag = false;
+// for (String facultyMails in event.data()['FacultIies Involved']) {
+// if ((loggedInUser.email == facultyMails) &&
+// (event.data()['FacultIies Involved'].last != facultyMails)) {
+// flag = true;
+// }
+// if ((event.data()['Status'] != 'ONGOING') &&
+// (event.data()['FacultIies Involved'].last == facultyMails) &&
+// (loggedInUser.email == facultyMails)) {
+// flag = true;
+// }
+// }
+// if (loggedInUser.email == event.data()['Generated User'] || flag) {
+// final eventCard = EventCard(
+// eventTitle: event.data()['Event Name'],
+// eventId: event.data()['ID'].toString(),
+// date: event.data()['Date'],
+// student: event.data()['Generated User'],
+// eventstatus: event.data()['Status'],
+// nextpage: Student_Faculty_event_details(
+// name: event.data()['Event Name'],
+// id: event.data()['ID'].toString(),
+// date: event.data()['Date'],
+// student: event.data()['Generated User'],
+// eventStartTime: event.data()['Event Start Time'],
+// eventEndTime: event.data()['Event End Time'],
+// venue: event.data()['Venue'],
+// description: event.data()['Event Description'],
+// facultiesInvolved: event.data()['FacultIies Involved'],
+// status: event.data()['Status'],
+// userType: event.data()['User Type'],
+// ),
+// context: context);
+// EventRequests.add(eventCard);
+// }
+// }

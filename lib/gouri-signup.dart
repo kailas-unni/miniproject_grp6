@@ -16,6 +16,8 @@ class _SignUpState extends State<SignUp> {
   late String password1;
   late String name;
   late String batch;
+  late String? _selectedOption = "STUDENT";
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -35,6 +37,9 @@ class _SignUpState extends State<SignUp> {
             child:
                 Column(mainAxisAlignment: MainAxisAlignment.center, children: <
                     Widget>[
+              const SizedBox(
+                height: 30,
+              ),
               const Text(
                 'Sign Up',
                 style: TextStyle(
@@ -49,6 +54,35 @@ class _SignUpState extends State<SignUp> {
                   child: Divider(
                     color: Colors.white,
                   )),
+              Card(
+                color: Colors.white70,
+                margin: EdgeInsets.symmetric(vertical: 0.0, horizontal: 40.0),
+                child: Padding(
+                  padding: const EdgeInsets.all(0.05),
+                  child: DropdownButton<String>(
+                    isExpanded: true,
+                    iconEnabledColor: Color.fromARGB(255, 214, 162, 222),
+                    iconSize: 60,
+                    value: _selectedOption,
+                    items: <String>[
+                      'STUDENT',
+                      'REPRESENTATIVES',
+                      'FACULTY',
+                    ].map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      // Change function parameter to nullable string
+                      setState(() {
+                        _selectedOption = newValue;
+                      });
+                    },
+                  ),
+                ),
+              ),
               Card(
                   color: Colors.white70,
                   margin:
@@ -97,7 +131,11 @@ class _SignUpState extends State<SignUp> {
                             },
                             decoration: InputDecoration(
                               border: InputBorder.none,
-                              hintText: 'Batch',
+                              hintText: (_selectedOption == "STUDENT")
+                                  ? "Batch"
+                                  : (_selectedOption == "FACULTY"
+                                      ? "Department"
+                                      : "Batch"),
                             ),
                           ),
                         ),
@@ -204,13 +242,26 @@ class _SignUpState extends State<SignUp> {
                 ),
                 child: const Text('Sign Up'),
                 onPressed: () async {
+                  String tablename;
+                  String temp;
+                  if (_selectedOption == "STUDENT") {
+                    tablename = 'studentDetails';
+                    temp = 'batch';
+                  } else if (_selectedOption == "FACULTY") {
+                    tablename = 'facultyDetails';
+                    temp = 'department';
+                  } else {
+                    tablename = 'repsDetails';
+                    temp = 'batch';
+                  }
                   if (password == password1) {
                     try {
                       final newuer = await _auth.createUserWithEmailAndPassword(
                           email: email, password: password);
                       if (newuer != Null) {
-                        _firestore.collection('userDetails').add(
-                            {'name': name, 'batch': batch, 'email': email});
+                        _firestore
+                            .collection(tablename)
+                            .add({'name': name, temp: batch, 'email': email});
                         Navigator.pushReplacement(context,
                             MaterialPageRoute(builder: (context) {
                           return LogIn();

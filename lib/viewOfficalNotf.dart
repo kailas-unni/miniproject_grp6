@@ -1,42 +1,42 @@
 import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 import 'package:flutter/material.dart';
 import 'package:notify_v1/home.dart';
-import 'components/sortWidget.dart';
+import 'components/sortOfficialWidget.dart';
 
-List<ListItem> filteredList = [];
+List<OfficialItem> filteredList = [];
 
-class viewNotfications extends StatefulWidget {
+class viewOfficialNotfications extends StatefulWidget {
   final String division;
-  final List<ListItem> items;
-  const viewNotfications({
+  final List<OfficialItem> officialitems;
+  const viewOfficialNotfications({
     Key? key,
     required this.division,
-    required this.items,
+    required this.officialitems,
   }) : super(key: key);
 
   @override
-  State<viewNotfications> createState() => _viewNotficationsState();
+  State<viewOfficialNotfications> createState() =>
+      _viewOfficialNotficationsState();
 }
 
-class _viewNotficationsState extends State<viewNotfications> {
+class _viewOfficialNotficationsState extends State<viewOfficialNotfications> {
   @override
   void initState() {
     super.initState();
-    filteredList = items;
+    filteredList = officialitems;
   }
 
   void _searchList(String query) {
     setState(() {
-      filteredList = items
+      filteredList = officialitems
           .where((item) =>
               item.title.toLowerCase().contains(query.toLowerCase()) ||
               item.details.toLowerCase().contains(query.toLowerCase()) ||
-              item.title.toLowerCase().contains(query.toLowerCase()) ||
               item.topic.toLowerCase().contains(query.toLowerCase()) ||
-              item.type.toLowerCase().contains(query.toLowerCase()) ||
               item.priority.toString().contains(query.toLowerCase()) ||
               item.submitiondate.toString().contains(query.toLowerCase()) ||
-              item.issueddate.toString().contains(query.toLowerCase()))
+              item.issueddate.toString().contains(query.toLowerCase()) ||
+              item.read.toString().contains(query.toLowerCase()))
           .toList();
     });
   }
@@ -118,7 +118,7 @@ class _DraggableScrollbarPageState extends State<DraggableScrollbarWidget> {
 
   int selectedIndex = 0;
 
-  void _showDetails(BuildContext context, ListItem details) {
+  void _showDetails(BuildContext context, OfficialItem details) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -138,9 +138,6 @@ class _DraggableScrollbarPageState extends State<DraggableScrollbarWidget> {
               '\n' +
               'Topic : ' +
               details.topic +
-              '\n' +
-              'Type : ' +
-              details.type +
               '\n' +
               'Further Details : ' +
               details.details +
