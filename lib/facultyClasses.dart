@@ -183,38 +183,56 @@ class _DraggableScrollbarPageState extends State<DraggableScrollbarWidget> {
           itemCount: filteredList.length,
           itemExtent: 100.0,
           itemBuilder: (context, index) {
-            return GestureDetector(
-              onTap: () {
-                setState(() {
-                  selectedIndex = index;
-                });
-                _showDetails(context, filteredList[index]);
-              },
-              child: Container(
-                padding: EdgeInsets.all(8.0),
-                decoration: BoxDecoration(
-                  color: selectedIndex == index ? Colors.blue : Colors.white,
-                  borderRadius: BorderRadius.circular(8.0),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 2,
-                      blurRadius: 5,
-                      offset: Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(25.0),
-                  child: Center(
-                    child: Text(
-                      filteredList[index].title,
-                      style: TextStyle(
-                        color: selectedIndex == index
-                            ? Colors.white
-                            : Colors.black,
-                        fontWeight: FontWeight.bold,
+            return Padding(
+              padding: EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 15.0),
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    selectedIndex = index;
+                  });
+                  _showDetails(context, filteredList[index]);
+                },
+                child: Container(
+                  padding: EdgeInsets.all(8.0),
+                  decoration: BoxDecoration(
+                    color: selectedIndex == index ? Colors.blue : Colors.white,
+                    borderRadius: BorderRadius.circular(8.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 2,
+                        blurRadius: 5,
+                        offset: Offset(0, 3),
                       ),
+                    ],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          filteredList[index].title,
+                          style: TextStyle(
+                            color: selectedIndex == index
+                                ? Colors.white
+                                : Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(
+                            height:
+                                7.0), // Add spacing between title and subtitle
+                        Text(
+                          filteredList[index].topic,
+                          style: TextStyle(
+                            color: selectedIndex == index
+                                ? Colors.white70
+                                : Colors.grey,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),

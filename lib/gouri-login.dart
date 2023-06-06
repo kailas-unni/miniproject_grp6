@@ -4,6 +4,8 @@ import 'package:notify_v1/gouri-signup.dart';
 import 'package:notify_v1/home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:notify_v1/facultyHome.dart';
+import 'package:notify_v1/repHome.dart';
+import 'package:notify_v1/webScrapping.dart';
 
 class LogIn extends StatefulWidget {
   @override
@@ -70,7 +72,9 @@ class _LogInState extends State<LogIn> {
                   ].map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
-                      child: Text(value),
+                      child: Padding(
+                          padding: EdgeInsets.only(left: 16.0),
+                          child: Text(value)),
                     );
                   }).toList(),
                   onChanged: (String? newValue) {
@@ -254,7 +258,7 @@ class _LogInState extends State<LogIn> {
                                   print("Inside");
                                   Navigator.pushReplacement(context,
                                       MaterialPageRoute(builder: (context) {
-                                    return AdminHome();
+                                    return RepHome();
                                   }));
                                 }
                               } catch (e) {
@@ -314,7 +318,12 @@ class _LogInState extends State<LogIn> {
                     padding: const EdgeInsets.all(0.0),
                     textStyle: const TextStyle(fontSize: 10),
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return WebScrap();
+                    }));
+                  },
                   child: const Text('Forgot password?'),
                 ),
               ),
