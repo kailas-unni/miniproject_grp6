@@ -1,22 +1,27 @@
 import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 import 'package:flutter/material.dart';
-import 'package:notify_v1/home.dart';
-import 'components/sortWidget.dart';
+import 'package:notify_v1/repHome.dart';
+import 'components/sortRepWidget.dart';
 
-List<ListItem> filteredList = [];
+List<ClassItem> filteredList = [];
 
-class notLog extends StatefulWidget {
-  const notLog({Key? key}) : super(key: key);
+class RepClasses extends StatefulWidget {
+  final String division;
+  const RepClasses({
+    Key? key,
+    required this.division,
+  }) : super(key: key);
 
   @override
-  State<notLog> createState() => _notLogState();
+  State<RepClasses> createState() => _RepClassesState();
 }
 
-class _notLogState extends State<notLog> {
-  @override
+class _RepClassesState extends State<RepClasses> {
   void initState() {
     super.initState();
-    filteredList = items;
+    print("hi" + widget.division);
+    filteredList =
+        items.where((item) => item.facname == widget.division).toList();
   }
 
   void _searchList(String query) {
@@ -25,12 +30,11 @@ class _notLogState extends State<notLog> {
           .where((item) =>
               item.title.toLowerCase().contains(query.toLowerCase()) ||
               item.details.toLowerCase().contains(query.toLowerCase()) ||
-              item.title.toLowerCase().contains(query.toLowerCase()) ||
               item.topic.toLowerCase().contains(query.toLowerCase()) ||
-              item.type.toLowerCase().contains(query.toLowerCase()) ||
               item.priority.toString().contains(query.toLowerCase()) ||
               item.submitiondate.toString().contains(query.toLowerCase()) ||
               item.issueddate.toString().contains(query.toLowerCase()))
+          .where((item) => item.rep == widget.division)
           .toList();
     });
   }
@@ -43,7 +47,11 @@ class _notLogState extends State<notLog> {
         appBar: AppBar(
           leading: InkWell(
               onTap: () {
-                Navigator.pop(context);
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => RepHome(),
+                    ));
               },
               child: Icon(Icons.arrow_back)),
           flexibleSpace: Container(
@@ -54,7 +62,7 @@ class _notLogState extends State<notLog> {
                     colors: <Color>[Color(0xff0077b6), Color(0xff0096c7)])),
           ),
           toolbarHeight: 70,
-          title: Text('Notification Log'),
+          title: Text("Logs"),
         ),
         body: SafeArea(
           child: SingleChildScrollView(
@@ -73,6 +81,9 @@ class _notLogState extends State<notLog> {
                       hintText: 'Search',
                     ),
                   ),
+                ),
+                SizedBox(
+                  height: 20,
                 ),
                 SortWidget(
                   filteredList: filteredList,
@@ -105,7 +116,7 @@ class _DraggableScrollbarPageState extends State<DraggableScrollbarWidget> {
 
   int selectedIndex = 0;
 
-  void _showDetails(BuildContext context, ListItem details) {
+  void _showDetails(BuildContext context, ClassItem details) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -114,20 +125,23 @@ class _DraggableScrollbarPageState extends State<DraggableScrollbarWidget> {
           content: Text('Subject : ' +
               details.title +
               '\n' +
+              'Type : ' +
+              details.type +
+              '\n' +
+              'Faculty : ' +
+              details.facname +
+              '\n' +
               'Priority : ' +
               details.priority.toString() +
               '\n' +
               'Issued Date : ' +
-              details.issueddate.toString() +
+              details.issueddate +
               '\n' +
               'Submition Date : ' +
-              details.submitiondate.toString() +
+              details.submitiondate +
               '\n' +
               'Topic : ' +
               details.topic +
-              '\n' +
-              'Type : ' +
-              details.type +
               '\n' +
               'Further Details : ' +
               details.details +
@@ -136,7 +150,17 @@ class _DraggableScrollbarPageState extends State<DraggableScrollbarWidget> {
               details.read.toString()),
           actions: <Widget>[
             TextButton(
-              child: Text('Close'),
+              child: Text('Edit'),
+              onPressed: () {
+                // Navigator.push(context, MaterialPageRoute(builder: (context) {
+                //   return EditNotificationPage(
+                //     division: details.id,
+                //   );
+                // }));
+              },
+            ),
+            TextButton(
+              child: Text('Ok'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -200,9 +224,7 @@ class _DraggableScrollbarPageState extends State<DraggableScrollbarWidget> {
                             height:
                                 7.0), // Add spacing between title and subtitle
                         Text(
-                          filteredList[index].type +
-                              ' | ' +
-                              filteredList[index].topic,
+                          filteredList[index].topic,
                           style: TextStyle(
                             color: selectedIndex == index
                                 ? Colors.white70

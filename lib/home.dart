@@ -24,9 +24,10 @@ class ListItem {
   final String type;
   final int priority;
   final String facname;
-  final DateTime issueddate;
-  final DateTime submitiondate;
+  final String issueddate;
+  final String submitiondate;
   final bool read;
+  final String rep;
   ListItem(
       {required this.title,
       required this.details,
@@ -36,10 +37,12 @@ class ListItem {
       required this.submitiondate,
       required this.type,
       required this.facname,
-      required this.read});
+      required this.read,
+      required this.rep});
 }
 
 List<ListItem> items = [];
+List<ListItem> moditems = [];
 
 class OfficialItem {
   final String details;
@@ -142,6 +145,21 @@ class _HomeState extends State<Home> {
     GetCurrentUser();
     fetchOfficialItems();
     countData();
+    NextDay();
+  }
+
+  void NextDay() {
+    moditems.clear();
+    DateTime now = DateTime.now();
+    DateTime issuedDate = now.add(Duration(days: 3));
+    String formattedDate = DateFormat('yyyy-MM-dd HH:mm').format(issuedDate);
+    for (int i = 0, j = 0; i < items.length; i++) {
+      if ((DateTime.parse(items[i].submitiondate)
+          .isBefore(DateTime.parse(formattedDate)))) {
+        moditems.add(items[i]);
+        j++;
+      }
+    }
   }
 
   void GetCurrentUser() async {
@@ -311,11 +329,49 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 SizedBox(
-                  height: 20,
+                  height: 10,
+                ),
+                Padding(
+                  padding: EdgeInsets.only(left: 8.0),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Container(
+                      child: Text(
+                        'Class',
+                        style: TextStyle(
+                          fontFamily: 'Montserrat',
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
                 ),
                 HorizontalList(),
                 SizedBox(
-                  height: 30,
+                  height: 10,
+                ),
+                Padding(
+                  padding: EdgeInsets.only(left: 8.0),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Container(
+                      child: Text(
+                        'Official',
+                        style: TextStyle(
+                          fontFamily: 'Montserrat',
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
                 ),
                 HorizontalList1(),
                 SizedBox(
@@ -627,6 +683,10 @@ class HorizontalList extends StatefulWidget {
 class _HorizontalListState extends State<HorizontalList> {
   int selectedIndex = 0;
 
+  void initState() {
+    super.initState();
+  }
+
   void _showDetails(BuildContext context, ListItem details) {
     showDialog(
       context: context,
@@ -640,10 +700,10 @@ class _HorizontalListState extends State<HorizontalList> {
               details.priority.toString() +
               '\n' +
               'Issued Date : ' +
-              details.issueddate.toString() +
+              details.issueddate +
               '\n' +
               'Submition Date : ' +
-              details.submitiondate.toString() +
+              details.submitiondate +
               '\n' +
               'Topic : ' +
               details.topic +
@@ -678,76 +738,44 @@ class _HorizontalListState extends State<HorizontalList> {
       height: 85,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: items.length + 1,
+        itemCount: moditems.length,
         itemBuilder: (context, index) {
-          if (index == 0) {
-            // Render the fixed box at index 0
-            return Container(
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                selectedIndex = index;
+              });
+              _showDetails(context, moditems[index]);
+            },
+            child: Container(
               margin: EdgeInsets.symmetric(horizontal: 8.0),
               decoration: BoxDecoration(
-                color: Colors.grey,
+                color: selectedIndex == index ? Colors.blue : Colors.white,
                 borderRadius: BorderRadius.circular(8.0),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                    offset: Offset(0, 3),
+                  ),
+                ],
               ),
               child: Padding(
                 padding: const EdgeInsets.all(25.0),
                 child: Center(
-                  child: RotatedBox(
-                    quarterTurns:
-                        3, // Rotates the text 270 degrees counter-clockwise
-                    child: Transform(
-                      alignment: Alignment.center,
-                      transform: Matrix4.rotationZ(
-                          0.0), // Applies a transformation to the text
-                      child: Text(
-                        'Class',
-                        style: TextStyle(fontSize: 14),
-                      ),
+                  child: Text(
+                    moditems[index].title + '\n' + moditems[index].type,
+                    style: TextStyle(
+                      color:
+                          selectedIndex == index ? Colors.white : Colors.black,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
               ),
-            );
-          } else {
-            // Render the iterative boxes for the items
-            index = index - 1;
-            return GestureDetector(
-              onTap: () {
-                setState(() {
-                  selectedIndex = index;
-                });
-                _showDetails(context, items[index]);
-              },
-              child: Container(
-                margin: EdgeInsets.symmetric(horizontal: 8.0),
-                decoration: BoxDecoration(
-                  color: selectedIndex == index ? Colors.blue : Colors.white,
-                  borderRadius: BorderRadius.circular(8.0),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 2,
-                      blurRadius: 5,
-                      offset: Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(25.0),
-                  child: Center(
-                    child: Text(
-                      items[index].title + '\n' + items[index].type,
-                      style: TextStyle(
-                        color: selectedIndex == index
-                            ? Colors.white
-                            : Colors.black,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            );
-          }
+            ),
+          );
         },
       ),
     );
@@ -814,78 +842,46 @@ class _HorizontalListState1 extends State<HorizontalList1> {
       height: 85,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: officialitems.length + 1,
+        itemCount: officialitems.length,
         itemBuilder: (context, index) {
-          if (index == 0) {
-            // Render the fixed box at index 0
-            return Container(
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                selectedIndex = index;
+              });
+              _showDetails(context, officialitems[index]);
+            },
+            child: Container(
               margin: EdgeInsets.symmetric(horizontal: 8.0),
               decoration: BoxDecoration(
-                color: Colors.grey,
+                color: selectedIndex == index ? Colors.blue : Colors.white,
                 borderRadius: BorderRadius.circular(8.0),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                    offset: Offset(0, 3),
+                  ),
+                ],
               ),
               child: Padding(
                 padding: const EdgeInsets.all(25.0),
                 child: Center(
-                  child: RotatedBox(
-                    quarterTurns:
-                        3, // Rotates the text 270 degrees counter-clockwise
-                    child: Transform(
-                      alignment: Alignment.center,
-                      transform: Matrix4.rotationZ(
-                          0.0), // Applies a transformation to the text
-                      child: Text(
-                        'Official',
-                        style: TextStyle(fontSize: 11),
-                      ),
+                  child: Text(
+                    officialitems[index].title +
+                        '\n' +
+                        officialitems[index].topic,
+                    style: TextStyle(
+                      color:
+                          selectedIndex == index ? Colors.white : Colors.black,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
               ),
-            );
-          } else {
-            // Render the iterative boxes for the items
-            index = index - 1;
-            return GestureDetector(
-              onTap: () {
-                setState(() {
-                  selectedIndex = index;
-                });
-                _showDetails(context, officialitems[index]);
-              },
-              child: Container(
-                margin: EdgeInsets.symmetric(horizontal: 8.0),
-                decoration: BoxDecoration(
-                  color: selectedIndex == index ? Colors.blue : Colors.white,
-                  borderRadius: BorderRadius.circular(8.0),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 2,
-                      blurRadius: 5,
-                      offset: Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(25.0),
-                  child: Center(
-                    child: Text(
-                      officialitems[index].title +
-                          '\n' +
-                          officialitems[index].topic,
-                      style: TextStyle(
-                        color: selectedIndex == index
-                            ? Colors.white
-                            : Colors.black,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            );
-          }
+            ),
+          );
         },
       ),
     );
@@ -921,10 +917,13 @@ class _MessageStreamState extends State<MessageStream> {
         topic: data['topic'],
         type: data['type'],
         priority: data['priority'],
-        issueddate: data['issueddate'].toDate(),
-        submitiondate: data['submitiondate'].toDate(),
+        issueddate:
+            DateFormat('yyyy-MM-dd HH:mm').format(data['issueddate'].toDate()),
+        submitiondate: DateFormat('yyyy-MM-dd HH:mm')
+            .format(data['submitiondate'].toDate()),
         read: data['read'],
         facname: data['facname'],
+        rep: data['rep'],
       );
     }).toList();
 

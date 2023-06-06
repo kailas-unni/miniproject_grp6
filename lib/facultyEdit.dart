@@ -31,6 +31,33 @@ class _EditNotificationPageState extends State<EditNotificationPage> {
     fetchDocument();
   }
 
+  void _deleteNotification() async {
+    if (notification != null && notification!.reference != null) {
+      await notification!.reference.delete();
+    }
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Success'),
+          content: Text('Data deleted successfully!'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) {
+                  return AdminHome();
+                }));
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Future<DocumentSnapshot<Map<String, dynamic>>> getDocumentSnapshot(
       String documentId) async {
     CollectionReference collection =
@@ -202,6 +229,13 @@ class _EditNotificationPageState extends State<EditNotificationPage> {
           ElevatedButton(
             onPressed: _updateNotification,
             child: Text('Update'),
+          ),
+          ElevatedButton(
+            onPressed: _deleteNotification,
+            style: ElevatedButton.styleFrom(
+              primary: Colors.red,
+            ),
+            child: Text('Delete'),
           ),
         ],
       ),
