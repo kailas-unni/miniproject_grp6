@@ -324,7 +324,7 @@ class _LogInState extends State<LogIn> {
                       return WebScrap();
                     }));
                   },
-                  child: const Text('Forgot password?'),
+                  child: const Text('Forgot Password?'),
                 ),
               ),
               SizedBox(
